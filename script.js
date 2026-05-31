@@ -8,7 +8,7 @@ const MODS = [
     {
         name: "BridgingMod",
         slug: "bridging-mod",
-        description: "Te ayuda a colocar bloques hacia atrás o hacia los lados de forma más fácil y rápida para hacer puentes sin caerte."
+        description: "Te ayuda a colocar bloques hacia atrás o hacia los lados de forma más fácil y rápida para hacer puentes sin caerte. Requiere YACL para funcionar."
     },
     {
         name: "Gamma-Utils",
@@ -28,7 +28,7 @@ const MODS = [
     {
         name: "justzoom",
         slug: "just-zoom",
-        description: "Te permite hacer zoom (acercar la pantalla) presionando una tecla para ver cosas que están muy lejos."
+        description: "Te permite hacer zoom (acercar la pantalla) presionando una tecla para ver cosas que están muy lejos. Requiere Konkrete para funcionar."
     },
     {
         name: "konkrete",
@@ -44,6 +44,11 @@ const MODS = [
         name: "xaerosworldmap",
         slug: "xaeros-world-map",
         description: "Es el mapa completo a pantalla completa. Se va dibujando a medida que exploras el mundo y te permite ver todo lo que has descubierto."
+    },
+    {
+        name: "YetAnotherConfigLib (YACL)",
+        slug: "yacl",
+        description: "Este no añade nada visual al juego; es una biblioteca técnica interna necesaria para que funcione el mod BridgingMod."
     }
 ];
 
