@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'self';">
+    <title>Minecraft Client-Side Mods | Curado por Zinko</title>
+    <meta name="description" content="Recomendaciones de mods client-side de Minecraft 26.1.2 Neoforge, seleccionados y curados por Zinko.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="header-container">
+            <div class="logo-area">
+                <span class="logo-pill">Neoforge 26.1.2</span>
+                <h1>Minecraft Client-Side Mods</h1>
+                <p class="subtitle">Curados por <strong class="author-name">Zinko</strong></p>
+            </div>
+            <div class="version-banner">
+                <div class="banner-badge">⚠️ Client-Side Only</div>
+                <p>Todos estos mods se instalan únicamente en el cliente (tu PC). No son necesarios en el servidor.</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="app-main">
+        <section class="controls-section">
+            <div class="search-wrapper">
+                <input type="text" id="mod-search" placeholder="Buscar mods por nombre o descripción..." aria-label="Buscar mods">
+                <span class="search-icon">🔍</span>
+            </div>
+            <div class="info-pill-container">
+                <span class="info-tag">Total: <span id="mod-count">0</span> mods</span>
+            </div>
+        </section>
+
+        <section class="mods-grid" id="mods-container">
+            <!-- Mod cards will be generated dynamically by script.js using secure DOM methods -->
+        </section>
+    </main>
+
+    <footer class="app-footer">
+        <p>&copy; 2026 Zinko. Todos los mods listados enlazan a sus páginas oficiales en Modrinth.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
