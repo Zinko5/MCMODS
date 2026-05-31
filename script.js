@@ -61,11 +61,109 @@ const modsContainer = document.getElementById('mods-container');
 const modSearch = document.getElementById('mod-search');
 const modCount = document.getElementById('mod-count');
 
+// Dynamic Image Loaders for themes
+let dinoImages = [];
+let alexImages = [];
+let victorImages = [];
+
+const MARTIN_DEFAULTS = [
+    'martin/ark1.png',
+    'martin/ark2.png',
+    'martin/ark3.png',
+    'martin/ark4.png'
+];
+
+const ALEX_DEFAULTS = [
+    'alex/Starcraft-PNG-Photos.png',
+    'alex/lotr1.png',
+    'alex/protoss1.png',
+    'alex/protoss2.png',
+    'alex/wc1.png'
+];
+
+const VICTOR_DEFAULTS = [
+    'victor/ds1.png',
+    'victor/ds2.png',
+    'victor/ds3.png',
+    'victor/ds4.png',
+    'victor/ds5.png'
+];
+
+function checkImageExists(url) {
+    return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = url;
+    });
+}
+
+async function loadThemeImages(themeName, defaultList, sequentialPattern = false) {
+    let images = [];
+
+    // 1. Try parsing directory HTML listing (dev servers)
+    try {
+        const response = await fetch(`${themeName}/`);
+        if (response.ok) {
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const links = Array.from(doc.querySelectorAll('a'));
+            const parsed = links
+                .map(link => link.getAttribute('href'))
+                .filter(href => href && (href.endsWith('.png') || href.endsWith('.jpg') || href.endsWith('.jpeg') || href.endsWith('.webp')))
+                .map(href => {
+                    if (href.startsWith('http') || href.startsWith('/')) return href;
+                    return `${themeName}/${href}`;
+                });
+            if (parsed.length > 0) {
+                images = parsed;
+            }
+        }
+    } catch (e) {
+        console.warn(`Could not parse ${themeName}/ folder directory list, trying probe/fallback.`, e);
+    }
+
+    // 2. Try sequential probing if pattern requested
+    if (images.length === 0 && sequentialPattern) {
+        let index = 1;
+        let consecutiveFailures = 0;
+        const tempImages = [];
+        while (consecutiveFailures < 2) {
+            const src = `${themeName}/ark${index}.png`;
+            const exists = await checkImageExists(src);
+            if (exists) {
+                tempImages.push(src);
+                consecutiveFailures = 0;
+            } else {
+                consecutiveFailures++;
+            }
+            index++;
+        }
+        if (tempImages.length > 0) {
+            images = tempImages;
+        }
+    }
+
+    // 3. Fallback
+    if (images.length === 0) {
+        images = defaultList;
+    }
+    return images;
+}
+
+async function loadAllThemes() {
+    dinoImages = await loadThemeImages('martin', MARTIN_DEFAULTS, true);
+    alexImages = await loadThemeImages('alex', ALEX_DEFAULTS, false);
+    victorImages = await loadThemeImages('victor', VICTOR_DEFAULTS, false);
+    renderMods(modSearch.value);
+}
+
 /**
  * Builds a secure Mod Card DOM node following the secure coding guidelines.
  * Uses document.createElement and textContent exclusively.
  */
-function createModCard(mod) {
+function createModCard(mod, index) {
     // Generate URL
     const modrinthUrl = `https://modrinth.com/mod/${mod.slug}?loader=${LOADER}&version=${MC_VERSION}`;
 
@@ -74,6 +172,41 @@ function createModCard(mod) {
     card.setAttribute('href', modrinthUrl);
     card.setAttribute('target', '_blank');
     card.setAttribute('rel', 'noopener noreferrer');
+    card.classList.add('mod-card');
+
+    // Prehistoric Dino Banner (Hidden by default in CSS, shown in Martin theme)
+    const dinoBanner = document.createElement('div');
+    dinoBanner.classList.add('card-dino-banner');
+    const dinoImg = document.createElement('img');
+    const imgListDino = dinoImages.length > 0 ? dinoImages : MARTIN_DEFAULTS;
+    const dinoImgSrc = imgListDino[index % imgListDino.length];
+    dinoImg.setAttribute('src', dinoImgSrc);
+    dinoImg.setAttribute('alt', 'Dinosaurio de Ark');
+    dinoBanner.appendChild(dinoImg);
+    card.appendChild(dinoBanner);
+
+    // Alex Theme Banner (Hidden by default in CSS, shown in Alex theme)
+    const alexBanner = document.createElement('div');
+    alexBanner.classList.add('card-alex-banner');
+    const alexImg = document.createElement('img');
+    const imgListAlex = alexImages.length > 0 ? alexImages : ALEX_DEFAULTS;
+    const alexImgSrc = imgListAlex[index % imgListAlex.length];
+    alexImg.setAttribute('src', alexImgSrc);
+    alexImg.setAttribute('alt', 'Alex Warcraft/Starcraft/LOTR');
+    alexBanner.appendChild(alexImg);
+    card.appendChild(alexBanner);
+
+    // Victor Theme Banner (Hidden by default in CSS, shown in Victor theme)
+    const victorBanner = document.createElement('div');
+    victorBanner.classList.add('card-victor-banner');
+    const victorImg = document.createElement('img');
+    const imgListVictor = victorImages.length > 0 ? victorImages : VICTOR_DEFAULTS;
+    const victorImgSrc = imgListVictor[index % imgListVictor.length];
+    victorImg.setAttribute('src', victorImgSrc);
+    victorImg.setAttribute('alt', 'Victor Dark Souls Knight');
+    victorBanner.appendChild(victorImg);
+    card.appendChild(victorBanner);
+
     card.classList.add('mod-card');
 
     // Content Wrapper
@@ -165,8 +298,8 @@ function renderMods(query = '') {
         return;
     }
 
-    filteredMods.forEach(mod => {
-        const card = createModCard(mod);
+    filteredMods.forEach((mod, index) => {
+        const card = createModCard(mod, index);
         modsContainer.appendChild(card);
     });
 }
@@ -176,5 +309,25 @@ modSearch.addEventListener('input', (e) => {
     renderMods(e.target.value);
 });
 
-// Initial Render
-renderMods();
+const themeSelect = document.getElementById('theme-select');
+themeSelect.addEventListener('change', (e) => {
+    // Clean up all themes first
+    document.body.classList.remove('theme-martin', 'theme-alex', 'theme-victor');
+    const mascotImg = document.querySelector('.header-dino-mascot img');
+    
+    if (e.target.value === 'martin') {
+        document.body.classList.add('theme-martin');
+        if (mascotImg) mascotImg.setAttribute('src', 'martin/ark2.png');
+    } else if (e.target.value === 'alex') {
+        document.body.classList.add('theme-alex');
+        if (mascotImg) mascotImg.setAttribute('src', 'alex/protoss1.png');
+    } else if (e.target.value === 'victor') {
+        document.body.classList.add('theme-victor');
+        if (mascotImg) mascotImg.setAttribute('src', 'victor/ds3.png');
+    } else {
+        if (mascotImg) mascotImg.setAttribute('src', 'martin/ark2.png');
+    }
+});
+
+// Initial Render & Probe
+loadAllThemes();

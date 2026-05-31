@@ -66,6 +66,7 @@ body {
     margin-top: 8px;
     background: linear-gradient(135deg, #ffffff 30%, #a5b4fc 100%);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
@@ -338,4 +339,541 @@ body {
     border-radius: var(--radius-md);
     color: var(--text-muted);
     background-color: rgba(255, 255, 255, 0.01);
+}
+
+/* Theme Switcher Styles */
+.theme-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    padding: 6px 12px;
+    border-radius: var(--radius-md);
+}
+
+.theme-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+#theme-select {
+    background-color: #12131a;
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 4px 8px;
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    cursor: pointer;
+    outline: none;
+    transition: var(--transition);
+}
+
+#theme-select:focus {
+    border-color: var(--primary-color);
+}
+
+/* Martin (Ark Dinosaur) Theme Styles */
+body.theme-martin {
+    --bg-color: #0b0f0a; /* Jungle black */
+    --card-bg: #111a0e; /* Mossy dark green */
+    --text-color: #f0f7ed;
+    --text-muted: #8ea088;
+    --primary-color: #00ffd5; /* Tek light cyan */
+    --primary-glow: rgba(0, 255, 213, 0.15);
+    --accent-color: #d28c38; /* Ark amber / bone color */
+    --accent-glow: rgba(210, 140, 56, 0.15);
+    --border-color: #24351e;
+    --border-hover: #3d5933;
+    
+    background-image: radial-gradient(circle at bottom left, rgba(0, 255, 213, 0.03), transparent 50%),
+                      radial-gradient(circle at top right, rgba(210, 140, 56, 0.03), transparent 50%);
+}
+
+body.theme-martin .app-header {
+    background: linear-gradient(rgba(11, 15, 10, 0.82), rgba(11, 15, 10, 0.98)), url('martin/ark3.png') center/cover no-repeat;
+    border-bottom: 1px solid var(--border-color);
+}
+
+body.theme-martin .logo-pill {
+    background-color: rgba(0, 255, 213, 0.1);
+    color: var(--primary-color);
+    border-color: rgba(0, 255, 213, 0.3);
+}
+
+body.theme-martin .author-name {
+    color: var(--accent-color);
+    text-shadow: 0 0 10px rgba(210, 140, 56, 0.3);
+}
+
+body.theme-martin #theme-select,
+body.theme-martin .search-wrapper input {
+    background-color: #0d140b;
+    border-color: var(--border-color);
+}
+
+body.theme-martin .search-wrapper input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+/* dinosaur thumbnail in cards under Martin theme */
+body.theme-martin .mod-card {
+    background: linear-gradient(145deg, #111a0e 0%, #0c120a 100%);
+}
+
+body.theme-martin .mod-card::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    right: -10px;
+    width: 60px;
+    height: 60px;
+    background: url('martin/ark4.png') center/contain no-repeat;
+    opacity: 0.08;
+    transition: var(--transition);
+}
+
+body.theme-martin .mod-card:hover::after {
+    opacity: 0.18;
+    transform: scale(1.1) rotate(-5deg);
+}
+
+/* Card Dinosaur Banner (Default hidden) */
+.card-dino-banner {
+    display: none;
+}
+
+/* Card Alex Banner (Default hidden) */
+.card-alex-banner {
+    display: none;
+}
+
+/* Card Victor Banner (Default hidden) */
+.card-victor-banner {
+    display: none;
+}
+
+/* Header Mascot (Default hidden) */
+.header-dino-mascot {
+    display: none;
+}
+
+/* Prehistoric Pre-etched / Fossil & Leafy Typography */
+body.theme-martin {
+    font-family: 'Cabin Sketch', cursive;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+body.theme-martin h1,
+body.theme-martin h2,
+body.theme-martin h3,
+body.theme-martin .logo-pill,
+body.theme-martin .theme-label,
+body.theme-martin .banner-badge,
+body.theme-martin .info-tag,
+body.theme-martin .modrinth-link-indicator {
+    font-family: 'Slackey', cursive;
+    text-shadow: 2px 2px 0px #070a06;
+}
+
+body.theme-martin .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+body.theme-martin .header-dino-mascot {
+    display: block;
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #00ffd5;
+    box-shadow: 0 0 15px rgba(0, 255, 213, 0.3);
+    animation: dino-float 4s ease-in-out infinite alternate;
+    flex-shrink: 0;
+}
+
+@keyframes dino-float {
+    0% { transform: translateY(0) rotate(-3deg); }
+    100% { transform: translateY(-6px) rotate(3deg); }
+}
+
+body.theme-martin .header-dino-mascot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+body.theme-martin .logo-area h1 {
+    background: linear-gradient(135deg, #a7f3d0 0%, #00ffd5 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+/* Card layout modifications in Martin theme */
+body.theme-martin .mod-card {
+    border: 2px dashed #3d5933;
+    background: radial-gradient(circle at top right, rgba(0, 255, 213, 0.05), transparent), #111a0e;
+    padding-top: 24px;
+}
+
+body.theme-martin .card-dino-banner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: calc(100% + 48px);
+    height: 180px;
+    margin: -24px -24px 18px -24px;
+    overflow: hidden;
+    position: relative;
+    border-bottom: 2px dashed #3d5933;
+    background-color: rgba(0, 0, 0, 0.35);
+}
+
+body.theme-martin .card-dino-banner img {
+    width: 94%;
+    height: 94%;
+    object-fit: contain;
+    transition: var(--transition);
+}
+
+body.theme-martin .mod-card:hover .card-dino-banner img {
+    transform: scale(1.05) rotate(1deg);
+}
+
+body.theme-martin .mod-card:hover {
+    border-color: #00ffd5;
+    box-shadow: 0 8px 24px rgba(0, 255, 213, 0.25);
+}
+
+body.theme-martin .mod-card::before {
+    background-color: #00ffd5;
+}
+
+body.theme-martin .mod-badge {
+    background-color: rgba(0, 255, 213, 0.08);
+    border-color: rgba(0, 255, 213, 0.2);
+    color: #00ffd5;
+}
+
+body.theme-martin .version-banner {
+    border-color: var(--border-color);
+    background-color: rgba(0, 255, 213, 0.01);
+}
+
+body.theme-martin .banner-badge {
+    color: #00ffd5;
+    background-color: rgba(0, 255, 213, 0.1);
+}
+
+/* Alex (Warcraft / Protoss / LOTR) Theme Styles */
+body.theme-alex {
+    --bg-color: #080711; /* Cosmic void / deep purple space */
+    --card-bg: #110e25; /* Protoss matrix indigo */
+    --text-color: #f1eeff;
+    --text-muted: #9f9ab8;
+    --primary-color: #ffd700; /* Khala elven gold */
+    --primary-glow: rgba(255, 215, 0, 0.15);
+    --accent-color: #00ffd5; /* Psionic matrix cyan */
+    --accent-glow: rgba(0, 255, 213, 0.15);
+    --border-color: #27204c;
+    --border-hover: #483d80;
+    
+    background-image: radial-gradient(circle at bottom right, rgba(0, 255, 213, 0.04), transparent 50%),
+                      radial-gradient(circle at top left, rgba(255, 215, 0, 0.04), transparent 50%);
+    font-family: 'MedievalSharp', cursive;
+    font-weight: 500;
+}
+
+body.theme-alex h1,
+body.theme-alex h2,
+body.theme-alex h3,
+body.theme-alex .logo-pill,
+body.theme-alex .theme-label,
+body.theme-alex .banner-badge,
+body.theme-alex .info-tag,
+body.theme-alex .modrinth-link-indicator {
+    font-family: 'Cinzel', serif;
+    font-weight: 800;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    letter-spacing: 0.5px;
+}
+
+body.theme-alex .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+body.theme-alex .header-dino-mascot {
+    display: block;
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #ffd700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+    animation: alex-float 4s ease-in-out infinite alternate;
+    flex-shrink: 0;
+}
+
+@keyframes alex-float {
+    0% { transform: translateY(0) scale(0.98); }
+    100% { transform: translateY(-8px) scale(1.02); }
+}
+
+body.theme-alex .header-dino-mascot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+body.theme-alex .logo-area h1 {
+    background: linear-gradient(135deg, #ffffff 30%, #ffd700 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+body.theme-alex .app-header {
+    background: linear-gradient(rgba(8, 7, 17, 0.8), rgba(8, 7, 17, 0.98)), url('alex/protoss2.png') center/cover no-repeat;
+    border-bottom: 1px solid var(--border-color);
+}
+
+body.theme-alex .logo-pill {
+    background-color: rgba(255, 215, 0, 0.1);
+    color: var(--primary-color);
+    border-color: rgba(255, 215, 0, 0.3);
+}
+
+body.theme-alex .author-name {
+    color: #00ffd5;
+    text-shadow: 0 0 10px rgba(0, 255, 213, 0.4);
+}
+
+body.theme-alex #theme-select,
+body.theme-alex .search-wrapper input {
+    background-color: #0d0b1d;
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+body.theme-alex .search-wrapper input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+/* Card layout modifications in Alex theme */
+body.theme-alex .mod-card {
+    border: 2px solid #332766;
+    background: radial-gradient(circle at top right, rgba(0, 255, 213, 0.05), transparent), #13102c;
+    padding-top: 24px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+body.theme-alex .card-alex-banner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: calc(100% + 48px);
+    height: 180px;
+    margin: -24px -24px 18px -24px;
+    overflow: hidden;
+    position: relative;
+    border-bottom: 2px solid #4a3a99;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+body.theme-alex .card-alex-banner img {
+    width: 94%;
+    height: 94%;
+    object-fit: contain;
+    transition: var(--transition);
+}
+
+body.theme-alex .mod-card:hover .card-alex-banner img {
+    transform: scale(1.05) rotate(1deg);
+}
+
+body.theme-alex .mod-card:hover {
+    border-color: #ffd700;
+    box-shadow: 0 8px 24px rgba(255, 215, 0, 0.25);
+}
+
+body.theme-alex .mod-card::before {
+    background-color: #ffd700;
+}
+
+body.theme-alex .mod-badge {
+    background-color: rgba(255, 215, 0, 0.08);
+    border-color: rgba(255, 215, 0, 0.2);
+    color: #ffd700;
+}
+
+body.theme-alex .version-banner {
+    border-color: var(--border-color);
+    background-color: rgba(255, 215, 0, 0.01);
+}
+
+body.theme-alex .banner-badge {
+    color: #ffd700;
+    background-color: rgba(255, 215, 0, 0.1);
+}
+
+/* Victor (Dark Souls / Knight) Theme Styles */
+body.theme-victor {
+    --bg-color: #0c0a0a; /* Ash / coal black */
+    --card-bg: #151212; /* Rusted metal background */
+    --text-color: #dfd5cb; /* Ash white */
+    --text-muted: #8c8278; /* Rusted copper */
+    --primary-color: #ff5500; /* Bonfire orange */
+    --primary-glow: rgba(255, 85, 0, 0.2);
+    --accent-color: #cc3300; /* Red flame */
+    --accent-glow: rgba(204, 51, 0, 0.15);
+    --border-color: #382c2a; /* Charred wood */
+    --border-hover: #61443d;
+    
+    background-image: radial-gradient(circle at bottom right, rgba(255, 85, 0, 0.05), transparent 50%),
+                      radial-gradient(circle at top left, rgba(204, 51, 0, 0.03), transparent 50%);
+    font-family: 'Almendra', serif;
+    font-weight: 500;
+}
+
+body.theme-victor h1,
+body.theme-victor h2,
+body.theme-victor h3,
+body.theme-victor .logo-pill,
+body.theme-victor .theme-label,
+body.theme-victor .banner-badge,
+body.theme-victor .info-tag,
+body.theme-victor .modrinth-link-indicator {
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+    letter-spacing: 1px;
+}
+
+body.theme-victor .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+body.theme-victor .header-dino-mascot {
+    display: block;
+    width: 75px;
+    height: 75px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 3px solid #ff5500;
+    box-shadow: 0 0 15px rgba(255, 85, 0, 0.5);
+    animation: victor-flicker 5s ease-in-out infinite alternate;
+    flex-shrink: 0;
+}
+
+@keyframes victor-flicker {
+    0% { transform: translateY(0) scale(0.98); filter: brightness(1.0); }
+    50% { transform: translateY(-3px) scale(1.02); filter: brightness(1.15); }
+    100% { transform: translateY(0) scale(1.0); filter: brightness(0.95); }
+}
+
+body.theme-victor .header-dino-mascot img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+body.theme-victor .logo-area h1 {
+    background: linear-gradient(135deg, #dfd5cb 30%, #ff5500 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+body.theme-victor .app-header {
+    background: linear-gradient(rgba(12, 10, 10, 0.8), rgba(12, 10, 10, 0.98)), url('victor/ds1.png') center/cover no-repeat;
+    border-bottom: 1px solid var(--border-color);
+}
+
+body.theme-victor .logo-pill {
+    background-color: rgba(255, 85, 0, 0.1);
+    color: var(--primary-color);
+    border-color: rgba(255, 85, 0, 0.3);
+}
+
+body.theme-victor .author-name {
+    color: #ff5500;
+    text-shadow: 0 0 10px rgba(255, 85, 0, 0.4);
+}
+
+body.theme-victor #theme-select,
+body.theme-victor .search-wrapper input {
+    background-color: #1a1616;
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+body.theme-victor .search-wrapper input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+/* Card layout modifications in Victor theme */
+body.theme-victor .mod-card {
+    border: 2px solid #382c2a;
+    background: radial-gradient(circle at top right, rgba(255, 85, 0, 0.05), transparent), #151212;
+    padding-top: 24px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+}
+
+body.theme-victor .card-victor-banner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: calc(100% + 48px);
+    height: 180px;
+    margin: -24px -24px 18px -24px;
+    overflow: hidden;
+    position: relative;
+    border-bottom: 2px solid #544340;
+    background-color: rgba(0, 0, 0, 0.55);
+}
+
+body.theme-victor .card-victor-banner img {
+    width: 94%;
+    height: 94%;
+    object-fit: contain;
+    transition: var(--transition);
+}
+
+body.theme-victor .mod-card:hover .card-victor-banner img {
+    transform: scale(1.05) rotate(1deg);
+}
+
+body.theme-victor .mod-card:hover {
+    border-color: #ff5500;
+    box-shadow: 0 8px 24px rgba(255, 85, 0, 0.25);
+}
+
+body.theme-victor .mod-card::before {
+    background-color: #ff5500;
+}
+
+body.theme-victor .mod-badge {
+    background-color: rgba(255, 85, 0, 0.08);
+    border-color: rgba(255, 85, 0, 0.2);
+    color: #ff5500;
+}
+
+body.theme-victor .version-banner {
+    border-color: var(--border-color);
+    background-color: rgba(255, 85, 0, 0.01);
+}
+
+body.theme-victor .banner-badge {
+    color: #ff5500;
+    background-color: rgba(255, 85, 0, 0.1);
 }
