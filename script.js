@@ -1,10 +1,10 @@
 // Mod database
 const MODS = [
-    {
-        name: "autoclicker",
-        slug: "autoclicker",
-        description: "Te permite dar clics automáticos y rápidos sin cansarte el dedo. ¡Ideal para granjas!"
-    },
+    // {
+    //     name: "autoclicker",
+    //     slug: "autoclicker",
+    //     description: "Te permite dar clics automáticos y rápidos sin cansarte el dedo. ¡Ideal para granjas!"
+    // },
     {
         name: "BridgingMod",
         slug: "bridging-mod",
@@ -54,7 +54,7 @@ const MODS = [
 
 // Configuration
 const MC_VERSION = "26.1.2";
-const LOADER = "neoforge";
+let LOADER = "neoforge";
 
 // DOM Elements
 const modsContainer = document.getElementById('mods-container');
@@ -126,7 +126,7 @@ async function loadThemeImages(themeName, defaultList, prefixes = []) {
                     if (decodedHref.startsWith(`${themeName}/`)) return decodedHref;
                     return `${themeName}/${decodedHref}`;
                 });
-            
+
             if (parsed.length > 0) {
                 images = parsed;
             }
@@ -179,6 +179,35 @@ async function loadAllThemes() {
     renderMods(modSearch.value);
 }
 
+async function fetchDirectDownload(slug, loader) {
+    try {
+        // Try with game version first
+        let url = `https://api.modrinth.com/v2/project/${slug}/version?game_versions=["${MC_VERSION}"]&loaders=["${loader}"]`;
+        let res = await fetch(url);
+        let data = [];
+        if (res.ok) {
+            data = await res.json();
+        }
+
+        // Fallback without version constraint (grabs latest for loader)
+        if (!data || data.length === 0) {
+            url = `https://api.modrinth.com/v2/project/${slug}/version?loaders=["${loader}"]`;
+            res = await fetch(url);
+            if (res.ok) {
+                data = await res.json();
+            }
+        }
+
+        if (data && data.length > 0) {
+            const primaryFile = data[0].files.find(f => f.primary) || data[0].files[0];
+            return primaryFile ? primaryFile.url : null;
+        }
+    } catch (e) {
+        console.error("Error fetching download from Modrinth API:", e);
+    }
+    return null;
+}
+
 /**
  * Builds a secure Mod Card DOM node following the secure coding guidelines.
  * Uses document.createElement and textContent exclusively.
@@ -228,6 +257,48 @@ function createModCard(mod, index) {
     card.appendChild(victorBanner);
 
     card.classList.add('mod-card');
+
+    // Direct Download Button
+    const dlBtn = document.createElement('button');
+    dlBtn.classList.add('card-download-btn');
+    dlBtn.setAttribute('title', 'Descargar mod directamente');
+    dlBtn.setAttribute('aria-label', `Descargar ${mod.name} directamente`);
+
+    const dlIcon = document.createElement('span');
+    dlIcon.textContent = '📥';
+    dlBtn.appendChild(dlIcon);
+    card.appendChild(dlBtn);
+
+    dlBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        dlIcon.textContent = '⏳';
+        dlBtn.disabled = true;
+
+        try {
+            const downloadUrl = await fetchDirectDownload(mod.slug, LOADER);
+            if (downloadUrl) {
+                const tempLink = document.createElement('a');
+                tempLink.href = downloadUrl;
+                tempLink.setAttribute('target', '_blank');
+                document.body.appendChild(tempLink);
+                tempLink.click();
+                document.body.removeChild(tempLink);
+                dlIcon.textContent = '✅';
+            } else {
+                dlIcon.textContent = '❌';
+            }
+        } catch (err) {
+            console.error("Download failed:", err);
+            dlIcon.textContent = '❌';
+        }
+
+        setTimeout(() => {
+            dlIcon.textContent = '📥';
+            dlBtn.disabled = false;
+        }, 2000);
+    });
 
     // Content Wrapper
     const cardContent = document.createElement('div');
@@ -334,7 +405,7 @@ themeSelect.addEventListener('change', (e) => {
     // Clean up all themes first
     document.body.classList.remove('theme-martin', 'theme-alex', 'theme-victor');
     const mascotImg = document.querySelector('.header-dino-mascot img');
-    
+
     if (e.target.value === 'martin') {
         document.body.classList.add('theme-martin');
         if (mascotImg) mascotImg.setAttribute('src', 'martin/2.png');
@@ -348,6 +419,34 @@ themeSelect.addEventListener('change', (e) => {
         if (mascotImg) mascotImg.setAttribute('src', 'martin/2.png');
     }
 });
+
+// Loader Switcher Listeners
+const btnNeoforge = document.getElementById('btn-neoforge');
+const btnFabric = document.getElementById('btn-fabric');
+const loaderPill = document.getElementById('loader-pill');
+
+function setLoader(newLoader) {
+    if (newLoader === LOADER) return;
+    LOADER = newLoader;
+
+    if (LOADER === 'neoforge') {
+        btnNeoforge.classList.add('active');
+        btnFabric.classList.remove('active');
+        if (loaderPill) loaderPill.textContent = `Neoforge ${MC_VERSION}`;
+    } else {
+        btnFabric.classList.add('active');
+        btnNeoforge.classList.remove('active');
+        if (loaderPill) loaderPill.textContent = `Fabric ${MC_VERSION}`;
+    }
+
+    // Re-render to update the generated URLs and footer details
+    renderMods(modSearch.value);
+}
+
+if (btnNeoforge && btnFabric) {
+    btnNeoforge.addEventListener('click', () => setLoader('neoforge'));
+    btnFabric.addEventListener('click', () => setLoader('fabric'));
+}
 
 // Initial Render & Probe
 loadAllThemes();

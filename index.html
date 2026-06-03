@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; script-src 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://api.modrinth.com; script-src 'self';">
     <title>Minecraft Client-Side Mods | Curado por Zinko</title>
     <meta name="description" content="Recomendaciones de mods client-side de Minecraft 26.1.2 Neoforge, seleccionados y curados por Zinko.">
     <!-- Google Fonts -->
@@ -17,7 +17,7 @@
         <div class="header-container">
             <div class="logo-area">
                 <div class="logo-text-wrapper">
-                    <span class="logo-pill">Neoforge 26.1.2</span>
+                    <span class="logo-pill" id="loader-pill">Neoforge 26.1.2</span>
                     <h1>Minecraft Client-Side Mods</h1>
                     <p class="subtitle">Curados por <strong class="author-name">Zinko</strong></p>
                 </div>
@@ -37,6 +37,13 @@
             <div class="search-wrapper">
                 <input type="text" id="mod-search" placeholder="Buscar mods por nombre o descripción..." aria-label="Buscar mods">
                 <span class="search-icon">🔍</span>
+            </div>
+            <div class="loader-switcher-wrapper">
+                <span class="switcher-label">Mod Loader:</span>
+                <div class="loader-switch">
+                    <button type="button" class="switch-btn active" id="btn-neoforge" data-loader="neoforge">Neoforge</button>
+                    <button type="button" class="switch-btn" id="btn-fabric" data-loader="fabric">Fabric</button>
+                </div>
             </div>
             <div class="theme-wrapper">
                 <span class="theme-label">¡Selecciona quién eres!</span>
