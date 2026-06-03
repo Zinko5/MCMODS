@@ -67,26 +67,29 @@ let alexImages = [];
 let victorImages = [];
 
 const MARTIN_DEFAULTS = [
-    'martin/ark1.png',
-    'martin/ark2.png',
-    'martin/ark3.png',
-    'martin/ark4.png'
+    'martin/1.png',
+    'martin/2.png',
+    'martin/3.png',
+    'martin/4.png',
+    'martin/5.png',
+    'martin/6.png',
+    'martin/7.png'
 ];
 
 const ALEX_DEFAULTS = [
-    'alex/Starcraft-PNG-Photos.png',
-    'alex/lotr1.png',
-    'alex/protoss1.png',
-    'alex/protoss2.png',
-    'alex/wc1.png'
+    'alex/1.png',
+    'alex/2.png',
+    'alex/3.png',
+    'alex/4.png',
+    'alex/5.png'
 ];
 
 const VICTOR_DEFAULTS = [
-    'victor/ds1.png',
-    'victor/ds2.png',
-    'victor/ds3.png',
-    'victor/ds4.png',
-    'victor/ds5.png'
+    'victor/1.png',
+    'victor/2.png',
+    'victor/3.png',
+    'victor/4.png',
+    'victor/5.png'
 ];
 
 function checkImageExists(url) {
@@ -98,10 +101,10 @@ function checkImageExists(url) {
     });
 }
 
-async function loadThemeImages(themeName, defaultList, sequentialPattern = false) {
+async function loadThemeImages(themeName, defaultList, prefixes = []) {
     let images = [];
 
-    // 1. Try parsing directory HTML listing (dev servers)
+    // 1. Try parsing directory HTML listing (useful for dev servers)
     try {
         const response = await fetch(`${themeName}/`);
         if (response.ok) {
@@ -111,41 +114,58 @@ async function loadThemeImages(themeName, defaultList, sequentialPattern = false
             const links = Array.from(doc.querySelectorAll('a'));
             const parsed = links
                 .map(link => link.getAttribute('href'))
-                .filter(href => href && (href.endsWith('.png') || href.endsWith('.jpg') || href.endsWith('.jpeg') || href.endsWith('.webp')))
+                .filter(href => {
+                    if (!href) return false;
+                    const cleanHref = href.split('?')[0].split('#')[0];
+                    return cleanHref.endsWith('.png') || cleanHref.endsWith('.jpg') || cleanHref.endsWith('.jpeg') || cleanHref.endsWith('.webp') || cleanHref.endsWith('.gif');
+                })
                 .map(href => {
-                    if (href.startsWith('http') || href.startsWith('/')) return href;
-                    return `${themeName}/${href}`;
+                    const cleanHref = href.split('?')[0].split('#')[0];
+                    const decodedHref = decodeURIComponent(cleanHref);
+                    if (decodedHref.startsWith('http') || decodedHref.startsWith('/')) return decodedHref;
+                    if (decodedHref.startsWith(`${themeName}/`)) return decodedHref;
+                    return `${themeName}/${decodedHref}`;
                 });
+            
             if (parsed.length > 0) {
                 images = parsed;
             }
         }
     } catch (e) {
-        console.warn(`Could not parse ${themeName}/ folder directory list, trying probe/fallback.`, e);
+        console.warn(`Could not parse directory list for ${themeName}/, attempting sequential probe...`, e);
     }
 
-    // 2. Try sequential probing if pattern requested
-    if (images.length === 0 && sequentialPattern) {
-        let index = 1;
-        let consecutiveFailures = 0;
+    // 2. Try sequential probing for custom prefixes (useful for file:// protocol)
+    if (images.length === 0 && prefixes.length > 0) {
         const tempImages = [];
-        while (consecutiveFailures < 2) {
-            const src = `${themeName}/ark${index}.png`;
-            const exists = await checkImageExists(src);
-            if (exists) {
-                tempImages.push(src);
-                consecutiveFailures = 0;
-            } else {
-                consecutiveFailures++;
+        for (const prefix of prefixes) {
+            let index = 1;
+            let consecutiveFailures = 0;
+            while (consecutiveFailures < 2) {
+                let src = `${themeName}/${prefix}${index}.png`;
+                let exists = await checkImageExists(src);
+                if (!exists && index === 1) {
+                    // Try without trailing index number (e.g. Starcraft-PNG-Photos.png)
+                    src = `${themeName}/${prefix}.png`;
+                    exists = await checkImageExists(src);
+                }
+                if (exists) {
+                    if (!tempImages.includes(src)) {
+                        tempImages.push(src);
+                    }
+                    consecutiveFailures = 0;
+                } else {
+                    consecutiveFailures++;
+                }
+                index++;
             }
-            index++;
         }
         if (tempImages.length > 0) {
             images = tempImages;
         }
     }
 
-    // 3. Fallback
+    // 3. Fallback to hardcoded list
     if (images.length === 0) {
         images = defaultList;
     }
@@ -153,9 +173,9 @@ async function loadThemeImages(themeName, defaultList, sequentialPattern = false
 }
 
 async function loadAllThemes() {
-    dinoImages = await loadThemeImages('martin', MARTIN_DEFAULTS, true);
-    alexImages = await loadThemeImages('alex', ALEX_DEFAULTS, false);
-    victorImages = await loadThemeImages('victor', VICTOR_DEFAULTS, false);
+    dinoImages = await loadThemeImages('martin', MARTIN_DEFAULTS, ['']);
+    alexImages = await loadThemeImages('alex', ALEX_DEFAULTS, ['']);
+    victorImages = await loadThemeImages('victor', VICTOR_DEFAULTS, ['']);
     renderMods(modSearch.value);
 }
 
@@ -317,15 +337,15 @@ themeSelect.addEventListener('change', (e) => {
     
     if (e.target.value === 'martin') {
         document.body.classList.add('theme-martin');
-        if (mascotImg) mascotImg.setAttribute('src', 'martin/ark2.png');
+        if (mascotImg) mascotImg.setAttribute('src', 'martin/2.png');
     } else if (e.target.value === 'alex') {
         document.body.classList.add('theme-alex');
-        if (mascotImg) mascotImg.setAttribute('src', 'alex/protoss1.png');
+        if (mascotImg) mascotImg.setAttribute('src', 'alex/2.png');
     } else if (e.target.value === 'victor') {
         document.body.classList.add('theme-victor');
-        if (mascotImg) mascotImg.setAttribute('src', 'victor/ds3.png');
+        if (mascotImg) mascotImg.setAttribute('src', 'victor/3.png');
     } else {
-        if (mascotImg) mascotImg.setAttribute('src', 'martin/ark2.png');
+        if (mascotImg) mascotImg.setAttribute('src', 'martin/2.png');
     }
 });
 
