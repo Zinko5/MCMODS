@@ -132,33 +132,32 @@ async function loadThemeImages(themeName, defaultList, prefixes = []) {
             }
         }
     } catch (e) {
-        console.warn(`Could not parse directory list for ${themeName}/, attempting sequential probe...`, e);
+        console.warn(`Could not parse directory list for ${themeName}/, attempting parallel probe...`, e);
     }
 
-    // 2. Try sequential probing for custom prefixes (useful for file:// protocol)
+    // 2. Try parallel probing for custom prefixes (useful for file:// protocol and static hosting)
     if (images.length === 0 && prefixes.length > 0) {
         const tempImages = [];
+        // Probe indices 1 to 20 in parallel
+        const indices = Array.from({ length: 20 }, (_, i) => i + 1);
+
         for (const prefix of prefixes) {
-            let index = 1;
-            let consecutiveFailures = 0;
-            while (consecutiveFailures < 2) {
+            const promises = indices.map(async (index) => {
                 let src = `${themeName}/${prefix}${index}.png`;
                 let exists = await checkImageExists(src);
                 if (!exists && index === 1) {
-                    // Try without trailing index number (e.g. Starcraft-PNG-Photos.png)
                     src = `${themeName}/${prefix}.png`;
                     exists = await checkImageExists(src);
                 }
-                if (exists) {
-                    if (!tempImages.includes(src)) {
-                        tempImages.push(src);
-                    }
-                    consecutiveFailures = 0;
-                } else {
-                    consecutiveFailures++;
+                return exists ? src : null;
+            });
+
+            const results = await Promise.all(promises);
+            results.forEach(src => {
+                if (src && !tempImages.includes(src)) {
+                    tempImages.push(src);
                 }
-                index++;
-            }
+            });
         }
         if (tempImages.length > 0) {
             images = tempImages;
@@ -173,9 +172,17 @@ async function loadThemeImages(themeName, defaultList, prefixes = []) {
 }
 
 async function loadAllThemes() {
-    dinoImages = await loadThemeImages('martin', MARTIN_DEFAULTS, ['']);
-    alexImages = await loadThemeImages('alex', ALEX_DEFAULTS, ['']);
-    victorImages = await loadThemeImages('victor', VICTOR_DEFAULTS, ['']);
+    // Probe all three themes in parallel concurrently
+    const [dino, alex, victor] = await Promise.all([
+        loadThemeImages('martin', MARTIN_DEFAULTS, ['']),
+        loadThemeImages('alex', ALEX_DEFAULTS, ['']),
+        loadThemeImages('victor', VICTOR_DEFAULTS, [''])
+    ]);
+
+    dinoImages = dino;
+    alexImages = alex;
+    victorImages = victor;
+
     renderMods(modSearch.value);
 }
 
@@ -448,5 +455,8 @@ if (btnNeoforge && btnFabric) {
     btnFabric.addEventListener('click', () => setLoader('fabric'));
 }
 
-// Initial Render & Probe
+// Initial Render (instantly shows list with defaults)
+renderMods();
+
+// Probe dynamically in the background asynchronously
 loadAllThemes();
