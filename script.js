@@ -281,7 +281,7 @@ function createModCard(mod, index) {
             if (downloadUrl) {
                 const tempLink = document.createElement('a');
                 tempLink.href = downloadUrl;
-                tempLink.setAttribute('target', '_blank');
+                tempLink.setAttribute('download', '');
                 document.body.appendChild(tempLink);
                 tempLink.click();
                 document.body.removeChild(tempLink);
