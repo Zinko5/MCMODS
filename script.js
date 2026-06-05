@@ -6,6 +6,18 @@ const MODS = [
     //     description: "Te permite dar clics automáticos y rápidos sin cansarte el dedo. ¡Ideal para granjas!"
     // },
     {
+        name: "Litematica",
+        slug: "litematica",
+        description: "Sirve para ver las construcciones que quieres hacer en el juego,  muestra una especie de fantasma de los bloques que quieres poner. Requiere MaLiLib para funcionar.",
+        loaders: ["fabric"]
+    },
+    {
+        name: "MaLiLib",
+        slug: "malilib",
+        description: "Este no añade nada visual al juego; es una biblioteca técnica interna necesaria para que funcione el mod Litematica.",
+        loaders: ["fabric"]
+    },
+    {
         name: "BridgingMod",
         slug: "bridging-mod",
         description: "Te ayuda a colocar bloques hacia atrás o hacia los lados de forma más fácil y rápida para hacer puentes sin caerte. Requiere YACL para funcionar."
@@ -21,27 +33,27 @@ const MODS = [
         description: "Cuando miras un bloque o una criatura, te muestra un pequeño cartel arriba diciendo exactamente qué es y de qué mod viene."
     },
     {
-        name: "jei (Just Enough Items)",
+        name: "JEI (Just Enough Items)",
         slug: "jei",
         description: "El clásico buscador de objetos. Te muestra una lista a la derecha de la pantalla con todas las recetas para saber cómo se fabrica cualquier cosa."
     },
     {
-        name: "justzoom",
+        name: "Justzoom",
         slug: "just-zoom",
         description: "Te permite hacer zoom (acercar la pantalla) presionando una tecla para ver cosas que están muy lejos. Requiere Konkrete para funcionar."
     },
     {
-        name: "konkrete",
+        name: "Konkrete",
         slug: "konkrete",
         description: "Este no añade nada visual al juego; es una biblioteca técnica interna que otros mods (zoom) necesitan para poder funcionar bien."
     },
     {
-        name: "xaerosminimap",
+        name: "Xaerosminimap",
         slug: "xaeros-minimap",
         description: "Te añade un minimapa muy bonito en una esquina de la pantalla para que veas dónde estás, los enemigos cercanos y no te pierdas."
     },
     {
-        name: "xaerosworldmap",
+        name: "Xaerosworldmap",
         slug: "xaeros-world-map",
         description: "Es el mapa completo a pantalla completa. Se va dibujando a medida que exploras el mundo y te permite ver todo lo que has descubierto."
     },
@@ -380,10 +392,18 @@ function renderMods(query = '') {
     modsContainer.replaceChildren();
 
     const normalizedQuery = query.toLowerCase().trim();
-    const filteredMods = MODS.filter(mod =>
-        mod.name.toLowerCase().includes(normalizedQuery) ||
-        mod.description.toLowerCase().includes(normalizedQuery)
-    );
+    const filteredMods = MODS.filter(mod => {
+        // Filter by loader
+        if (mod.loaders && !mod.loaders.includes(LOADER)) {
+            return false;
+        }
+        // Filter by search query
+        return mod.name.toLowerCase().includes(normalizedQuery) ||
+            mod.description.toLowerCase().includes(normalizedQuery);
+    });
+
+    // Sort alphabetically by name
+    filteredMods.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
 
     // Update count indicator
     modCount.textContent = filteredMods.length;
